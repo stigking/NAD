@@ -1,0 +1,15 @@
+# R
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+# renv - ignore installed packages but keep lockfile
+renv/library/
+renv/staging/
+renv/sandbox/
+
+# OS
+.DS_Store
+Thumbs.db
