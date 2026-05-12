@@ -10,9 +10,7 @@ library(tidyr)
 # =========================================================
 
 SEASONS <- c(
-  "2025-26","2024-25","2023-24","2022-23","2021-22","2020-21",
-  "2019-20","2018-19","2017-18","2016-17","2015-16","2014-15",
-  "2013-14","2012-13","2011-12","2010-11","2009-10","2008-09"
+  "2025-26","2024-25","2023-24"
 )
 
 default_season <- "2023-24"
@@ -423,11 +421,18 @@ plotly_png_config <- function(filename_base = "plot") {
 # =========================================================
 
 load_season_stats <- function(season_string) {
-  stats_raw <- nba_leaguedashplayerstats(
-    season = season_string,
-    per_mode_detailed = "Totals"
-  )
-  
+  # Try loading from local cache first (works on deployed servers where NBA API is blocked)
+  cache_file <- paste0("data/", season_string, ".rds")
+  if (file.exists(cache_file)) {
+    stats_raw <- readRDS(cache_file)
+  } else {
+    # Fall back to live API (works locally)
+    stats_raw <- nba_leaguedashplayerstats(
+      season = season_string,
+      per_mode_detailed = "Totals"
+    )
+  }
+
   required_upper <- c(
     "PLAYER_NAME","TEAM_ABBREVIATION","PTS","AST","REB","STL","BLK","MIN","GP",
     "FG3M","FGM","FGA","FG3A","FTM","FTA"
