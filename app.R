@@ -422,15 +422,16 @@ plotly_png_config <- function(filename_base = "plot") {
 
 load_season_stats <- function(season_string) {
   # Try loading from local cache first (works on deployed servers where NBA API is blocked)
-  cache_file <- paste0("data/", season_string, ".rds")
+  # Load from cached .rds file — path relative to app.R location
+  app_dir <- tryCatch(dirname(sys.frame(1)$ofile), error = function(e) ".")
+  cache_file <- file.path(app_dir, "data", paste0(season_string, ".rds"))
+  if (!file.exists(cache_file)) {
+    cache_file <- file.path("data", paste0(season_string, ".rds"))
+  }
   if (file.exists(cache_file)) {
     stats_raw <- readRDS(cache_file)
   } else {
-    # Fall back to live API (works locally)
-    stats_raw <- nba_leaguedashplayerstats(
-      season = season_string,
-      per_mode_detailed = "Totals"
-    )
+    stop(paste("No cached data found for", season_string))
   }
 
   required_upper <- c(
